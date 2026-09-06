@@ -36,6 +36,14 @@
 
 ### Fixed
 
+- `ucp screenshot --game` now includes UI Toolkit screen-space overlays. The capture only
+  called `Camera.Render()`, which draws the scene but not the runtime UI Toolkit panels those
+  overlays live in, so every `UIDocument`/`PanelRenderer` overlay was missing from the PNG. The
+  active screen-space panels for the captured display are now redirected to the screenshot
+  render target, updated, repainted, and rendered into it, then restored. Panels the caller
+  already routes to their own render texture, transient editor panels, and world-space panels
+  are left alone.
+
 - Removed the empty `UCP.Bridge.Runtime` assembly definition. Every install logged `Assembly
   for Assembly Definition File 'Packages/com.ucp.bridge/Runtime/UCP.Bridge.Runtime.asmdef' will
   not be compiled, because it has no scripts associated with it` on import, which also meant

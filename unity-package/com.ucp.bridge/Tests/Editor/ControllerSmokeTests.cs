@@ -1472,6 +1472,26 @@ namespace UCP.Bridge.Tests
             Assert.That(setDefines.error, Is.Null);
         }
 
+        [Test]
+        public void ScreenshotOverlayApi_ResolvesOnRunningEditor()
+        {
+            // `screenshot` composites UI Toolkit screen-space overlays through internal
+            // UnityEngine.UIElements members. When one of them is renamed - Unity 6000.2 replaced
+            // GetSortedPlayerPanels with GetSortedScreenOverlayPlayerPanels - the capture silently
+            // falls back to a camera-only image, so assert the resolution here instead.
+            var api = ScreenshotController.ResolveOverlayApi();
+
+            Assert.That(api.GetPanels, Is.Not.Null, "No UIElementsRuntimeUtility player panel accessor");
+            Assert.That(api.UpdatePanels, Is.Not.Null, "UIElementsRuntimeUtility.UpdatePanels not found");
+            Assert.That(api.RepaintPanel, Is.Not.Null, "UIElementsRuntimeUtility.RepaintPanel not found");
+            Assert.That(
+                api.RenderOffscreenPanels,
+                Is.Not.Null,
+                "UIElementsRuntimeUtility.RenderOffscreenPanels not found"
+            );
+            Assert.That(api.IsComplete, Is.True);
+        }
+
         private static void DeleteTempAsset()
         {
             if (AssetDatabase.LoadMainAssetAtPath(TempAssetPath) != null)

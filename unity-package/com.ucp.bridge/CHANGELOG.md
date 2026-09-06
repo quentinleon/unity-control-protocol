@@ -24,6 +24,15 @@
 
 ### Fixed
 
+- `screenshot` with `view: "game"` now composites UI Toolkit screen-space overlays into the
+  capture. `Camera.Render()` draws the scene but not the runtime UI Toolkit panels, so every
+  `UIDocument`/`PanelRenderer` overlay was missing from the PNG. The screen-space panels on the
+  captured display are redirected to the screenshot render target, laid out, repainted, and
+  rendered into it, then restored and repainted for the game view again. Panels the caller
+  already routes to their own render texture, transient panels, and world-space panels are left
+  alone. The `UnityEngine.UIElements` internals this needs are resolved by reflection and their
+  Unity 6000.2 renames are handled; an editmode test fails if a future version drops one instead
+  of silently returning a camera-only image.
 - Removed the empty `UCP.Bridge.Runtime` assembly definition that logged an "will not be
   compiled, because it has no scripts associated with it" warning on every import (#4).
 
